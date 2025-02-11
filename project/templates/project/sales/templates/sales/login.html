@@ -1,0 +1,100 @@
+{% extends 'base.html' %}
+
+{% block title %}เข้าสู่ระบบ{% endblock title %}
+
+{% block content %}
+<style>
+    /* General input field styling */
+    .form-input {
+      width: 100%;
+      padding: 12px; /* Increase padding for better touch targets */
+      border: 1px solid #d1d5db; /* Light gray border */
+      border-radius: 8px; /* Rounded corners */
+      font-size: 16px; /* Larger font size for readability */
+      transition: border-color 0.3s ease, box-shadow 0.3s ease; /* Smooth transitions */
+    }
+  
+    /* Focus state */
+    .form-input:focus {
+      border-color: #3b82f6; /* Blue border on focus */
+      box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.2); /* Subtle blue glow */
+      outline: none; /* Remove default outline */
+    }
+  
+    /* Placeholder text styling */
+    .form-input::placeholder {
+      color: #9ca3af; /* Gray placeholder text */
+      font-size: 14px; /* Slightly smaller placeholder font size */
+    }
+  
+    /* Label styling */
+    .form-label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 14px;
+      color: #374151; /* Dark gray label text */
+    }
+  </style>
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg mt-20">
+  <h2 class="text-2xl font-bold text-gray-700 text-center mb-6">เข้าสู่ระบบ</h2>
+
+  {% if messages %}
+    <div class="mb-4">
+      {% for message in messages %}
+        <div class="p-4 mb-2 text-sm text-white 
+          {% if message.tags == 'error' %}bg-red-500{% elif message.tags == 'success' %}bg-green-500{% endif %} rounded-lg">
+          {{ message }}
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+
+ <!-- sales/login.html -->
+
+ <form method="post">
+    {% csrf_token %}
+    <div class="space-y-4">
+      <!-- Email Field -->
+      <div>
+        <label for="{{ form.email.id_for_label }}" class="form-label">{{ form.email.label }}</label>
+        <input
+          type="email"
+          id="{{ form.email.id_for_label }}"
+          name="{{ form.email.name }}"
+          value="{{ form.email.value|default_if_none:'' }}"
+          class="form-input"
+          placeholder="กรุณากรอกอีเมล์"
+          required
+        >
+      </div>
+  
+      <!-- Password Field -->
+      <div>
+        <label for="{{ form.password.id_for_label }}" class="form-label">{{ form.password.label }}</label>
+        <input
+          type="password"
+          id="{{ form.password.id_for_label }}"
+          name="{{ form.password.name }}"
+          class="form-input"
+          placeholder="กรุณากรอกรหัสผ่าน"
+          required
+        >
+      </div>
+    </div>
+  
+    <!-- Submit Button -->
+    <button
+      type="submit"
+      class="w-full mt-6 py-3 px-4 bg-blue-500 text-white font-semibold rounded-lg shadow-md hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
+    >
+      เข้าสู่ระบบ
+    </button>
+  </form>
+
+  <!-- {% if not user.is_authenticated %}
+    <p class="text-center mt-4 text-gray-600">
+      ยังไม่มีบัญชี? <a href="{% url 'register-page' %}" class="text-blue-500 hover:underline">สมัครสมาชิก</a>
+    </p>
+  {% endif %} -->
+</div>
+{% endblock content %}

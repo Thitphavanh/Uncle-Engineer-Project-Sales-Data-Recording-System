@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %} ลบรายชื่อลูกค้า {% endblock title %}
+
+{% block content %}
+    <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg mt-20">
+        <div class="mb-6">
+            <h2 class="text-3xl font-bold text-gray-800">ลบรายชื่อลูกค้า</h2>
+        </div>
+    
+        <form method="POST" enctype="multipart/form-data" class="space-y-6" id="salesForm">
+            {% csrf_token %}
+       
+            <p>คุณแน่ใจหรือไม่ว่าต้องการลบลูกค้า "{{ customer.first_name }} {{ customer.last_name }}"?</p>
+
+            <form method="post">
+                {% csrf_token %}
+                <button type="submit" class="bg-red-500 text-white px-2 py-1 rounded">ลบ</button>
+                <button class="bg-blue-500 text-white px-2 py-1 rounded">  <a href="{% url 'customer-list-dashboard-page' %}" >ยกเลิก</a></button>
+            </form>
+        </form>
+    </div>
+
+{% endblock %}

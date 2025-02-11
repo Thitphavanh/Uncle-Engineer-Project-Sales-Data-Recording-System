@@ -1,0 +1,113 @@
+{% load static %}
+<nav class="bg-white shadow-lg">
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div class="flex justify-between h-16 items-center">
+             <!-- Navbar -->
+            
+            <!-- Logo -->
+            <div class="flex items-center">
+                <a href="{% url 'home-page' %}" class="text-gray-600 hover:text-blue-600">Aul Service Sale</a>
+            </div>
+
+            <!-- Desktop Menu -->
+            <!-- <div class="hidden md:flex space-x-4">
+                <a href="{% url 'create-sale-record-page' %}" class="text-gray-600 hover:text-blue-600">บันทึกข้อมูลเซลส์</a>
+            </div>
+         -->
+
+            <!-- Profile Dropdown (Visible on desktop) -->
+            <div class="relative hidden md:block">
+                {% if user.is_authenticated %}
+                    <button id="profile-btn" class="flex items-center space-x-2 focus:outline-none">
+                        {% if user.customuser.avatar %}
+                            <img src="{{ user.customuser.avatar.url }}" class="w-8 h-8 rounded-full cursor-pointer" id="profile-avatar">
+                        {% else %}
+                            <img src="{% static 'images/default-avatar.jpg' %}" class="w-8 h-8 rounded-full cursor-pointer" id="profile-avatar">
+                        {% endif %}
+                        <div class="text-gray-800">
+                            <span class="text-sm text-gray-500 block" id="user-type">{{ user.customuser.user_type }}</span>
+                        </div>
+                    </button>
+        
+                    <div id="profile-menu" class="hidden absolute right-0 mt-2 w-48 bg-white shadow-lg rounded-md border">
+                        <a href="" class="block px-4 py-2 text-gray-600 hover:bg-gray-200">Profile</a>
+                        <a href="" class="block px-4 py-2 text-gray-600 hover:bg-gray-200">Dashboard</a>
+                        {% if user.customuser.user_type == 'admin' %}
+                        <span><a href="{% url 'register-page' %}" class="block px-4 py-2 text-gray-600 hover:text-blue-600">Register</a></span>
+                        {% endif %}
+                        <a href="{% url 'logout-page' %}" class="block px-4 py-2 text-gray-600 hover:bg-gray-200">Logout</a>
+                    </div>
+                {% else %}
+                    <div class="flex space-x-4">  <!-- flex container with spacing between links -->
+                        <span><a href="{% url 'login-page' %}" class="block px-4 py-2 text-gray-600 hover:text-blue-600">Login</a></span>
+                     
+                    </div>
+                {% endif %}
+                
+            </div>
+
+            <!-- Mobile Menu Button -->
+            <div class="md:hidden flex items-center">
+                <button id="menu-btn" class="focus:outline-none">
+                    <svg class="w-6 h-6 text-gray-800" fill="none" stroke="currentColor" viewBox="0 0 24 24"
+                        xmlns="http://www.w3.org/2000/svg">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M4 6h16M4 12h16m-7 6h7"></path>
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Mobile Menu (Hidden by Default) -->
+    <div id="mobile-menu" class="md:hidden hidden bg-white border-t">
+        <a href="{% url 'create-sale-record-page' %}" class="block px-4 py-2 text-gray-600 hover:bg-gray-200">Sale</a>
+        
+        <!-- Profile Button for Mobile (Add this here) -->
+        {% if user.is_authenticated %}
+            <!-- <button id="profile-btn-mobile" class="block w-full text-left px-4 py-2 text-gray-600 hover:bg-gray-200">
+                {% if user.customuser.avatar %}
+                    <img src="{{ user.customuser.avatar.url }}" class="w-8 h-8 rounded-full inline-block mr-2">
+                {% else %}
+                    <img src="{% static 'images/default-avatar.jpg' %}" class="w-8 h-8 rounded-full inline-block mr-2">
+                {% endif %}
+                <span class="text-gray-800">{{ user.customuser.user_type }}</span>
+            </button> -->
+            <a href="" class="block px-4 py-2 text-gray-600 hover:bg-gray-200">Profile</a>
+            {% if user.customuser.user_type == 'admin' %}
+                <span><a href="{% url 'register-page' %}" class="block px-4 py-2 text-gray-600 hover:text-blue-600">Register</a></span>
+            {% endif %}
+            <a href="{% url 'logout-page' %}" class="block px-4 py-2 text-gray-600 hover:bg-gray-200">Logout</a>
+        {% else %}
+            <a href="{% url 'login-page' %}" class="block px-4 py-2 text-gray-600 hover:bg-gray-200">Login</a>
+        {% endif %}
+    </div>
+</nav>
+
+<script>
+    // Mobile menu toggle
+    document.getElementById('menu-btn').addEventListener('click', function () {
+        document.getElementById('mobile-menu').classList.toggle('hidden');
+    });
+
+    // Get references to the profile button and profile menu
+    const profileBtn = document.getElementById('profile-btn');
+    const profileMenu = document.getElementById('profile-menu');
+    const profileBtnMobile = document.getElementById('profile-btn-mobile');
+    
+    // Toggle the profile menu when the profile button is clicked
+    if (profileBtn) {
+        profileBtn.addEventListener('click', function(event) {
+            event.stopPropagation();  // Prevent the click from propagating to the document
+            profileMenu.classList.toggle('hidden');
+        });
+    }
+
+    // Close the profile menu if the user clicks anywhere outside the dropdown
+    document.addEventListener('click', function(event) {
+        if (profileBtn && !profileBtn.contains(event.target) && !profileMenu.contains(event.target)) {
+            profileMenu.classList.add('hidden');
+        }
+    });
+</script>
+

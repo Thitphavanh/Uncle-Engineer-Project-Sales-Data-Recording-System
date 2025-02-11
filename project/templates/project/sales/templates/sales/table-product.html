@@ -1,0 +1,121 @@
+{% extends 'base.html' %}
+
+{% block title %}รายการสินค้าทั้งหมด{% endblock title %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto bg-white p-8 rounded-lg shadow-lg mt-20">
+    <h2 class="text-2xl font-bold mb-4">รายการสินค้าทั้งหมด</h2>
+    <button onclick="window.print()" class="bg-blue-500 text-white px-4 py-2 rounded mb-4">พิมพ์รายการทั้งหมด</button>
+    
+    <div class="overflow-x-auto">
+        {% if user.customuser.user_type == 'admin' %}
+        <table class="min-w-full bg-white shadow-md rounded mt-6">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">ชื่อลูกค้า</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">สินค้า</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">จำนวน</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">ยอดโอน</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">สถานะ</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">{{ record.customer }}</td>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">{{ record.product }}</td>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">{{ record.quantity }}</td>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">{{ record.transfer_amount }}</td>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">
+                        {% if record.status == 'pending' %}
+                            <span class="text-black">รอคอนเฟิร์ม</span>
+                        {% else %}
+                            <span class="text-blue-500">คอนเฟิร์มยอดแล้ว</span>
+                        {% endif %}
+                    </td>
+                    
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">
+                    
+                        {% if record.status == 'pending' %}
+                            <a href="{% url 'confirm-sale-page' record.id %}" class="bg-blue-500 text-white px-2 py-1 rounded">คอนเฟิร์ม</a>  
+                        {% endif %} 
+                        
+                        {% if record.status == 'confirmed' %}
+                            <a href="{% url 'cancel-sale-page' record.id %}" class="bg-black text-white px-2 py-1 rounded">ยกเลิก</a>
+                        {% endif %}
+                            <a href="{% url 'edit-sale-record-page' record.id  %}" class="bg-green-500 text-white px-2 py-1 rounded">แก้ไข</a>
+                            <a href="{% url 'delete-sale-page' record.id %}" class="bg-red-500 text-white px-2 py-1 rounded">ลบ</a>     
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% elif user.customuser.user_type == 'account' %} 
+        <table class="min-w-full bg-white shadow-md rounded mt-6">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">ชื่อลูกค้า</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">สินค้า</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">จำนวน</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">ยอดโอน</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">สถานะ</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">จัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">{{ record.customer }}</td>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">{{ record.product }}</td>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">{{ record.quantity }}</td>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">{{ record.transfer_amount }}</td>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">
+                        {% if record.status == 'pending' %}
+                            <span class="text-black">รอคอนเฟิร์ม</span>
+                        {% else %}
+                            <span class="text-blue-500">คอนเฟิร์มยอดแล้ว</span>
+                        {% endif %}
+                    </td>
+                    
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">
+                    
+                            {% if record.status == 'pending' %}
+                                <a href="{% url 'confirm-sale-page' record.id %}" class="bg-blue-500 text-white px-2 py-1 rounded">คอนเฟิร์ม</a>  
+                            {% endif %} 
+                            
+                            {% if record.status == 'confirmed' %}
+                                <a href="{% url 'cancel-sale-page' record.id %}" class="bg-black text-white px-2 py-1 rounded">ยกเลิก</a>
+                            {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% elif user.customuser.user_type == 'sales' %}
+        <table class="min-w-full bg-white shadow-md rounded mt-6">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">ชื่อลูกค้า</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">สินค้า</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">จำนวน</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">ยอดโอน</th>
+                    <!-- <th class="px-4 py-2 text-xs sm:text-sm md:text-base">สถานะ</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">จัดการ</th> -->
+                </tr>
+            </thead>
+            <tbody>
+                {% for record in records %}
+                <tr>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">{{ record.customer }}</td>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">{{ record.product }}</td>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">{{ record.quantity }}</td>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">{{ record.transfer_amount }}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

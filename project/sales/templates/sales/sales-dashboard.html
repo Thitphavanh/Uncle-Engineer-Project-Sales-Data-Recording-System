@@ -1,0 +1,93 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block content %}
+<div class="max-w-7xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-gray-800 mb-6">Sales Dashboard</h1>
+
+    <!-- Summary Cards -->
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-lg font-semibold text-gray-700">ยอดรวมทั้งหมด</h2>
+            <p class="text-2xl font-bold text-blue-600">{{ total_sales }} THB</p>
+        </div>
+        <a href="{% url 'table-product-page' %}">
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-lg font-semibold text-gray-700">สินค้าทั้งหมด</h2>
+            <p class="text-2xl font-bold text-green-600">{{ total_products }}</p>
+        </div>
+        </a>
+        <a href="{% url 'customer-list-dashboard-page' %}">
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-lg font-semibold text-gray-700">รายชื่อลูกค้าทั้งหมด</h2>
+            <p class="text-2xl font-bold text-red-600">{{ total_customers }}</p>
+        </div>
+        </a>
+       
+        <div class="bg-white p-6 rounded-lg shadow">
+            <h2 class="text-lg font-semibold text-gray-700">ยอดสั่งซื้อทั้งหมด</h2>
+            <p class="text-2xl font-bold text-purple-600">{{ total_orders }}</p>
+        </div>
+    </div>
+
+    <!-- Sales Chart -->
+    <div class="bg-white p-6 rounded-lg shadow mb-6">
+        <h2 class="text-lg font-semibold text-gray-700 mb-4">Sales by Product</h2>
+        <canvas id="salesChart"></canvas>
+    </div>
+
+    <!-- Table of Recent Sales -->
+    <div class="bg-white p-6 rounded-lg shadow">
+        <h2 class="text-lg font-semibold text-gray-700 mb-4">Recent Sales</h2>
+        <table class="w-full border-collapse border border-gray-200">
+            <thead>
+                <tr class="bg-gray-100">
+                    <th class="p-2 border border-gray-300">Customer</th>
+                    <th class="p-2 border border-gray-300">Product</th>
+                    <th class="p-2 border border-gray-300">Quantity</th>
+                    <th class="p-2 border border-gray-300">Amount (THB)</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for sale in sales_data %}
+                <tr>
+                    <td class="p-2 border border-gray-300">{{ sale.customer }}</td>
+                    <td class="p-2 border border-gray-300">{{ sale.product__name }}</td>
+                    <td class="p-2 border border-gray-300">{{ sale.quantity }}</td>
+                    <td class="p-2 border border-gray-300 text-green-600">{{ sale.total_sales }}</td>
+                </tr>
+                {% empty %}
+                <tr>
+                    <td colspan="4" class="p-2 text-center border border-gray-300 text-gray-500">No sales records</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<!-- Chart.js Script -->
+<script>
+    var ctx = document.getElementById('salesChart').getContext('2d');
+    var salesChart = new Chart(ctx, {
+        type: 'bar',
+        data: {
+            labels: [{% for sale in sales_data %}"{{ sale.product__name }}",{% endfor %}],
+            datasets: [{
+                label: 'Sales (THB)',
+                data: [{% for sale in sales_data %}{{ sale.total_sales }},{% endfor %}],
+                backgroundColor: 'rgba(54, 162, 235, 0.6)',
+                borderColor: 'rgba(54, 162, 235, 1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+</script>
+{% endblock %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+
+{% block title %}Dashboard{% endblock title %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg mt-20">
+    <h2 class="text-2xl font-bold mb-4">รายชื่อลูก</h2>
+ 
+    
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white shadow-md rounded mt-6">
+            <thead>
+                <tr class="bg-gray-200">
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">ชื่อจริง</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">นามสกุล</th>
+                    <th class="px-4 py-2 text-xs sm:text-sm md:text-base">การจัดการ</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for customer in customers %}
+                <tr>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">{{ customer.first_name }}</td>
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">{{ customer.last_name }}</td>
+                
+                    <td class="border px-4 py-2 text-xs sm:text-sm md:text-base">
+                        <a href="{% url 'edit-customer-page' customer.id %}" class="bg-blue-500 text-white px-2 py-1 rounded">แก้ไข</a>
+                        
+                        <a href="{% url 'delete-customer-page' customer.id %}" class="bg-red-500 text-white px-2 py-1 rounded">ลบ</a>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+
+
+    </div>
+</div>
+{% endblock %}

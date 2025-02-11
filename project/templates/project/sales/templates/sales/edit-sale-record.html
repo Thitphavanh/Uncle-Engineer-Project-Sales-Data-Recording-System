@@ -1,0 +1,231 @@
+{% extends 'base.html' %}
+
+{% block title %} แก้ไจข้อมูลเซลส์ {% endblock title %}
+
+{% block content %}
+    <div class="max-w-4xl mx-auto bg-white p-8 rounded-lg shadow-lg mt-20 mb-20">
+        <div class="mb-6">
+            <h2 class="text-3xl font-bold text-gray-800">แก้ไจข้อมูลเซลส์</h2>
+            <p class="text-gray-600 mt-2">กรุณากรอกข้อมูลให้ครบถ้วน</p>
+        </div>
+    
+        <form method="POST" enctype="multipart/form-data" class="space-y-6" id="salesForm">
+            {% csrf_token %}
+            
+           
+            <!-- Customer and Product Selection with Enhanced UI -->
+        <div class="grid md:grid-cols-2 gap-8">
+            <div class="group">
+                <label class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors">
+                    ลูกค้า <span class="text-red-500">*</span>
+                </label>
+                <div class="relative transform transition-all duration-200 group-hover:scale-[1.02]">
+                    <select name="customer" required 
+                            class="w-full border border-gray-300 rounded-xl p-4 pr-10 appearance-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm hover:border-blue-400 transition-all">
+                        <option value="">-- เลือกลูกค้า --</option>
+                        {% for customer in customers %}
+                            <option value="{{ customer.id }}" {% if customer.id == sale_record.customer.id %}selected{% endif %}>
+                                {{ customer.first_name }} {{ customer.last_name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-400 group-hover:text-blue-500">
+                        <svg class="h-6 w-6 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+
+            <div class="group">
+                <label class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors">
+                    สินค้า <span class="text-red-500">*</span>
+                </label>
+                <div class="relative transform transition-all duration-200 group-hover:scale-[1.02]">
+                    <select name="product" required 
+                            class="w-full border border-gray-300 rounded-xl p-4 pr-10 appearance-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm hover:border-blue-400 transition-all">
+                        <option value="">-- เลือกสินค้า --</option>
+                        {% for product in products %}
+                            <option value="{{ product.id }}" {% if product.id == sale_record.product.id %}selected{% endif %}>
+                                {{ product.name }}
+                            </option>
+                        {% endfor %}
+                    </select>
+                    <div class="absolute inset-y-0 right-0 flex items-center px-3 pointer-events-none text-gray-400 group-hover:text-blue-500">
+                        <svg class="h-6 w-6 transition-transform group-hover:scale-110" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path d="M19 9l-7 7-7-7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    
+       
+            <div class="grid md:grid-cols-2 gap-6">
+                <div class="group">
+                    <label class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors">
+                        จำนวน <span class="text-red-500">*</span>
+                    </label>
+                    <div class="flex rounded-xl border border-gray-300 overflow-hidden group-hover:border-blue-400 transition-all shadow-sm">
+                        <button type="button" 
+                                class="px-4 py-3 bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors" 
+                                onclick="decrementQuantity()">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M20 12H4" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                        <input type="number" name="quantity" value="{{ sale_record.quantity }}" required 
+                               class="w-full text-center border-x border-gray-300 focus:ring-0 focus:border-blue-500" 
+                               id="quantityInput">
+                        <button type="button" 
+                                class="px-4 py-3 bg-gray-50 hover:bg-gray-100 active:bg-gray-200 transition-colors" 
+                                onclick="incrementQuantity()">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path d="M12 4v16m8-8H4" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="group">
+                    <label class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors">
+                        ยอดโอน (บาท) <span class="text-red-500">*</span>
+                    </label>
+                    <div class="relative transform transition-all duration-200 group-hover:scale-[1.02]">
+                        <input type="number" name="transfer_amount" step="1" value="{{ sale_record.transfer_amount }}" required 
+                               class="w-full border border-gray-300 rounded-xl p-2 pr-12 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm hover:border-blue-400 transition-all">
+                        <div class="absolute inset-y-0 right-0 flex items-center px-3">
+                            <span class="text-gray-500">฿</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+    
+            <!-- Enhanced Document Upload Section -->
+        <div class="grid md:grid-cols-2 gap-8 pb-10">
+            <div class="group">
+                <label class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors">
+                    แนบเอกสาร PO
+                </label>
+                <div class="flex items-center justify-center w-full">
+                    <label class="flex flex-col w-full h-40 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer hover:bg-blue-50 hover:border-blue-400 transition-all duration-200">
+                        <div class="flex flex-col items-center justify-center pt-6 pb-6">
+                            <svg class="w-12 h-12 mb-4 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                            </svg>
+                            <p class="mb-2 text-sm text-gray-500 group-hover:text-blue-600 transition-colors">
+                                <span class="font-semibold">คลิกเพื่อเลือกไฟล์</span> หรือลากไฟล์มาวาง
+                            </p>
+                            <p class="text-xs text-gray-500">PDF, PNG, JPG (ไม่เกิน 10MB)</p>
+                        </div>
+                        <input type="file" name="po_document" class="hidden" accept=".pdf,.png,.jpg,.jpeg">
+                        {% if sale_record.po_document %}
+                            <p class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors mt-2">ไฟล์เดิม: <a href="{{ sale_record.po_document.url }}" target="_blank">ดูไฟล์</a></p>
+                        {% endif %}
+                    </label>
+                </div>
+            </div>
+
+            <div class="group">
+                <label class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors">
+                    สลิปการชำระเงิน <span class="text-red-500">*</span>
+                </label>
+                <div class="flex items-center justify-center w-full">
+                    <label class="flex flex-col w-full h-40 border-2 border-gray-300 border-dashed rounded-xl cursor-pointer hover:bg-blue-50 hover:border-blue-400 transition-all duration-200">
+                        <div class="flex flex-col items-center justify-center pt-6 pb-6">
+                            <svg class="w-12 h-12 mb-4 text-gray-400 group-hover:text-blue-500 transition-colors" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" 
+                                      d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                            </svg>
+                            <p class="mb-2 text-sm text-gray-500 group-hover:text-blue-600 transition-colors">
+                                <span class="font-semibold">คลิกเพื่อเลือกไฟล์</span> หรือลากไฟล์มาวาง
+                            </p>
+                            <p class="text-xs text-gray-500">PNG, JPG (ไม่เกิน 5MB)</p>
+                        </div>
+                        <input type="file" name="payment_slip" class="hidden" accept=".png,.jpg,.jpeg">
+                        {% if sale_record.payment_slip %}
+                            <p class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors mt-2">ไฟล์เดิม: <a href="{{ sale_record.payment_slip.url }}" target="_blank">ดูไฟล์</a></p>
+                        {% endif %}
+                    </label>
+                </div>
+            </div>
+        </div>
+            
+    
+            <!-- Remarks -->
+            <div class="group">
+                <label class="block text-sm font-medium text-gray-700 mb-2 group-hover:text-blue-600 transition-colors">หมายเหตุ</label>
+                <textarea name="remarks" rows="4" 
+                          class="w-full border border-gray-300 rounded-xl p-4 focus:ring-2 focus:ring-blue-500 focus:border-blue-500 shadow-sm hover:border-blue-400 transition-all resize-none"
+                          placeholder="เพิ่มข้อมูลเพิ่มเติม (ถ้ามี)">{{ sale_record.remarks }}</textarea>
+            </div>
+    
+            <!-- Submit Button -->
+            <div class="flex items-center justify-end space-x-4">
+                <button type="button" onclick="window.history.back()" 
+                        class="px-6 py-3 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 focus:outline-none focus:ring-2 focus:ring-gray-500">
+                    ยกเลิก
+                </button>
+                <button type="submit" 
+                        class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                    อัปเดตข้อมูล
+                </button>
+            </div>
+        </form>
+    </div>
+    
+    <script>
+        
+    document.addEventListener('DOMContentLoaded', function() {
+        const form = document.getElementById('salesForm');
+        const productSelect = form.querySelector('select[name="product"]');
+        const quantityInput = document.getElementById('quantityInput');
+
+    
+        function updatePrices() {
+            const selectedOption = productSelect.selectedOptions[0];
+            if (selectedOption.value) {
+                const quantity = parseInt(quantityInput.value);
+                
+                unitPriceDisplay.value = `฿${price.toFixed(2)}`;
+                totalPriceDisplay.value = `฿${(price * quantity).toFixed(2)}`;
+            } else {
+                unitPriceDisplay.value = '฿0.00';
+                totalPriceDisplay.value = '฿0.00';
+            }
+        }
+    
+
+        quantityInput.addEventListener('change', updatePrices);
+        quantityInput.addEventListener('input', updatePrices);
+    
+        // File upload preview
+        const fileInputs = document.querySelectorAll('input[type="file"]');
+        fileInputs.forEach(input => {
+            input.addEventListener('change', function(e) {
+                const fileName = e.target.files[0]?.name;
+                const fileLabel = e.target.parentElement.querySelector('p');
+                if (fileName) {
+                    fileLabel.textContent = fileName;
+                }
+            });
+        });
+    });
+    
+    function incrementQuantity() {
+        const input = document.getElementById('quantityInput');
+        input.value = parseInt(input.value) + 1;
+        input.dispatchEvent(new Event('change'));
+    }
+    
+    function decrementQuantity() {
+        const input = document.getElementById('quantityInput');
+        if (parseInt(input.value) > 1) {
+            input.value = parseInt(input.value) - 1;
+            input.dispatchEvent(new Event('change'));
+        }
+    }
+    </script>
+{% endblock %}
